@@ -6,34 +6,44 @@ public class ValidadorCPF {
 
         // --- O participante implementa a partir daqui ---
 
-        // 2. TODO: Verificação de Tamanho
-        // Verifique se cpfLimpo tem exatamente 11 caracteres.
-        // Se não tiver, retorne false.
+        // 2. Verificação de Tamanho
+        // O CPF precisa ter exatamente 11 dígitos.
+        if (cpfLimpo.length() != 11) {
+            return false;
+        }
 
+        // 3. Verificação de Dígitos Repetidos
+        // Se todos os dígitos forem iguais (ex: "11111111111"), não é válido.
+        if (cpfLimpo.matches("(\\d)\\1{10}")) {
+            return false;
+        }
 
-        // 3. TODO: Verificação de Dígitos Repetidos
-        // Verifique se todos os dígitos são iguais (ex: "11111111111").
-        // Dica: Você pode usar uma expressão regular como cpfLimpo.matches("(\\d)\\1{10}")
-        // Se forem todos iguais, retorne false.
+        // 4. Cálculo do Primeiro Dígito Verificador
+        // Fórmula: multiplicar cada um dos 9 primeiros dígitos por pesos de 10 a 2.
+        int soma = 0;
+        for (int i = 0; i < 9; i++) {
+            int digito = Character.getNumericValue(cpfLimpo.charAt(i));
+            soma += digito * (10 - i);
+        }
+        int resto = soma % 11;
+        int digito1 = (resto < 2) ? 0 : 11 - resto; // regra do CPF
 
+        // 5. Cálculo do Segundo Dígito Verificador
+        // Agora usamos os 10 primeiros dígitos (incluindo o digito1 calculado).
+        soma = 0;
+        for (int i = 0; i < 10; i++) {
+            int digito = Character.getNumericValue(cpfLimpo.charAt(i));
+            soma += digito * (11 - i);
+        }
+        resto = soma % 11;
+        int digito2 = (resto < 2) ? 0 : 11 - resto;
 
-        // 4. TODO: Cálculo do Primeiro Dígito Verificador
-        // Pegue os 9 primeiros dígitos de cpfLimpo.
-        // Calcule o primeiro dígito usando o algoritmo. Lembre-se de converter char para int.
+        // 6. Validação Final
+        // Comparar os dois dígitos calculados com os dois últimos do CPF informado.
+        String digitosCalculados = "" + digito1 + digito2;
+        String digitosInformados = cpfLimpo.substring(9, 11);
 
-
-        // 5. TODO: Cálculo do Segundo Dígito Verificador
-        // Pegue os 10 primeiros dígitos de cpfLimpo.
-        // Calcule o segundo dígito usando o algoritmo.
-
-
-        // 6. TODO: Validação Final
-        // Compare os dois dígitos calculados com os dois últimos dígitos de cpfLimpo.
-        // Se ambos forem iguais, retorne true. Caso contrário, retorne false.
-
-
-        // Lembre-se de apagar os comentários e retornar o valor booleano correto.
-        return false; // Retorno provisório
+        return digitosCalculados.equals(digitosInformados);
     }
 
     // --- Área de Testes ---
