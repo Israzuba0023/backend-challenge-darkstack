@@ -2,36 +2,43 @@ function validarCPF(cpf) {
   // 1. Limpeza: Remove todos os caracteres que não são dígitos
   const cpfLimpo = cpf.replace(/\D/g, '');
 
-  // --- O participante implementa a partir daqui ---
+  // 2. Verificação de Tamanho
+  if (cpfLimpo.length !== 11) {
+    return false; // CPF precisa ter exatamente 11 dígitos
+  }
 
-  // 2. TODO: Verificação de Tamanho
-  // Verifique se o cpfLimpo tem exatamente 11 dígitos.
-  // Se não tiver, retorne false.
+  // 3. Verificação de Dígitos Repetidos
+  // Exemplo: "11111111111", "00000000000", etc.
+  if (/^(\d)\1{10}$/.test(cpfLimpo)) {
+    return false;
+  }
 
+  // 4. Cálculo do Primeiro Dígito Verificador
+  // Fórmula: somar os 9 primeiros dígitos multiplicados por pesos decrescentes de 10 a 2
+  let soma = 0;
+  for (let i = 0; i < 9; i++) {
+    soma += parseInt(cpfLimpo[i]) * (10 - i);
+  }
+  let resto = (soma * 10) % 11;
+  if (resto === 10) resto = 0; // regra: se resto for 10, usar 0
+  const primeiroDigito = resto;
 
-  // 3. TODO: Verificação de Dígitos Repetidos
-  // Verifique se todos os dígitos são iguais (ex: "11111111111").
-  // Dica: Você pode usar um Set ou uma expressão regular para isso.
-  // Se forem todos iguais, retorne false.
+  // 5. Cálculo do Segundo Dígito Verificador
+  // Fórmula: somar os 10 primeiros dígitos (inclui o primeiro DV) multiplicados por pesos de 11 a 2
+  soma = 0;
+  for (let i = 0; i < 10; i++) {
+    soma += parseInt(cpfLimpo[i]) * (11 - i);
+  }
+  resto = (soma * 10) % 11;
+  if (resto === 10) resto = 0;
+  const segundoDigito = resto;
 
-
-  // 4. TODO: Cálculo do Primeiro Dígito Verificador
-  // Pegue os 9 primeiros dígitos do cpfLimpo.
-  // Calcule o primeiro dígito usando o algoritmo fornecido.
-
-
-  // 5. TODO: Cálculo do Segundo Dígito Verificador
-  // Pegue os 10 primeiros dígitos do cpfLimpo (incluindo o primeiro dígito que você calculou).
-  // Calcule o segundo dígito usando o algoritmo.
-
-
-  // 6. TODO: Validação Final
-  // Compare os dois dígitos calculados com os dois últimos dígitos do cpfLimpo.
-  // Se ambos forem iguais, retorne true. Caso contrário, retorne false.
-
-
-  // Lembre-se de apagar os comentários e retornar o valor booleano correto.
-  return false; // Retorno provisório
+  // 6. Validação Final
+  // Verifica se os dois últimos dígitos do CPF são iguais aos calculados
+  return (
+    primeiroDigito === parseInt(cpfLimpo[9]) &&
+    segundoDigito === parseInt(cpfLimpo[10])
+  );
 }
 
 // --- Área de Testes ---
